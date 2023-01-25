@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body >
+    <h1>Appointment Booking App</h1>
+   <form >
+    <label for="text1">Name:</label>
+    <br>
+    <input type="text" id="text1">
+    <br>
+    <label for="text1">Email:</label> <br>
+    <input type="text" id="text2"> <br>
+    <label for="text3">Mobile:</label><br>
+    <input type="text" id="text3"><br>
+    <input type="submit" value="submit">
+   </form> 
+
+   <!-- <button id="clickMe">Click Me</button> -->
+   <ul id="itemList">
+
+   </ul>
+   
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+   <script >
+      
+    const form = document.querySelector('form');
+    form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const obj = {
+        Name:e.target[0].value,
+        Email:e.target[1].value,
+        Mobile:e.target[2].value
+    }
+
+    axios.post("http://localhost:3000/addBooking",obj).then((m)=>{
+    showUserOnScreen(m.data)
+    }).catch((err)=> console.log(err));
+
+});
+
+window.onload = ()=>{
+  axios.get("http://localhost:3000/Users").then((m)=>{
+   
+   for(let i=0; i<m.data.length; i++){
+   
+    showUserOnScreen(m.data[i]);
+
+   }
+   })
+   .catch((err)=> console.log(err))
+}
+    
+  // window.addEventListener("DOMContentLoaded" , ()=>{
+   
+  //  axios.get("http://localhost:3000/Users").then((m)=>{
+   
+  //  for(let i=0; i<m.data.length; i++){
+   
+  //   showUserOnScreen(m.data[i]);
+
+  //  }
+  //  })
+  //  .catch((err)=> console.log(err))
+
+  // });
+       
+   
+
+  function deleteClick(e){
+    
+    e.preventDefault();
+    const id = e.target.parentNode.childNodes[3].id;
+ 
+    axios.get(`http://localhost:3000/deleteBooking/${id}`)
+    .then((res)=> {
+
+      e.target.parentNode.parentNode.removeChild(e.target.parentNode);
+    })
+    .catch((err)=> console.log(err));
+
+  }
+
+  function showUserOnScreen(realObj){
+      
+    let list = document.getElementById('itemList');
+
+    let li = document.createElement('li');
+   let nameChild = document.createTextNode(realObj.name);
+   let emailChild = document.createTextNode(realObj.email);
+   let phoneChild = document.createTextNode(realObj.phone);
+    
+   let delet = document.createElement('BUTTON');
+   delet.setAttribute('id',realObj.id);
+   let deletText = document.createTextNode('DELETE');
+   
+   li.appendChild(nameChild);
+   li.appendChild(emailChild);
+   li.appendChild(phoneChild);
+   delet.appendChild(deletText);
+   
+   li.appendChild(delet);
+   
+   li.childNodes[3].addEventListener('click',deleteClick);
+   
+   list.appendChild(li);
+  }
+
+   </script>
+</body>
+
+</html>
